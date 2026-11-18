@@ -57,14 +57,6 @@
   .prompt-row span { color: var(--accent); }
   .prompt-row input { flex: 1; background: none; border: 0; outline: 0; color: var(--paper); font: inherit; caret-color: var(--accent); }
 
-  /* projects */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
-  .card { display: block; background: rgba(13,17,23,.85); border: 1px solid #2a2f37; border-radius: 10px; padding: 20px; color: var(--paper); transition: transform .2s, border-color .2s; backdrop-filter: blur(6px); }
-  .card:hover { transform: translateY(-3px); border-color: var(--accent); text-decoration: none; }
-  .card h3 { font-size: 16px; font-weight: 600; color: var(--paper); margin-bottom: 6px; word-break: break-word; }
-  .card p { color: var(--dim); font-size: 13px; min-height: 40px; }
-  .meta { margin-top: 14px; display: flex; gap: 16px; font-size: 12px; color: var(--dim); }
-  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: var(--accent2); }
 
   footer { padding: 60px 0 40px; color: var(--dim); font-size: 12px; border-top: 1px solid #2a2f37; }
   @media (prefers-reduced-motion: reduce) { .hint { animation: none; } }
@@ -80,7 +72,7 @@
     <p class="tag">I build things for the web: sites, tools, and the tests that keep them from breaking. Move your cursor around; the background is listening.</p>
     <nav class="links">
       <a href="#terminal">Terminal</a>
-      <a href="#projects">Projects</a>
+      <a href="https://www.linkedin.com/in/jonathan-laurin-6a873122/">LinkedIn</a>
       <a href="https://github.com/jolaurin">GitHub</a>
     </nav>
     <p class="hint">↓ scroll</p>
@@ -98,11 +90,6 @@
     </div>
   </section>
 
-  <section id="projects">
-    <h2>Projects</h2>
-    <p class="sub">Pulled live from GitHub, most recently updated first.</p>
-    <div class="grid" id="grid"><p class="muted">Loading…</p></div>
-  </section>
 
   <footer>
     © <span id="yr"></span> Jonathan Laurin · One HTML file, no framework, hosted on GitHub Pages.
@@ -159,74 +146,26 @@
   if (reduce) { for (let i = 0; i < 160; i++) step(); } else step();
 })();
 
-/* ---------- projects from GitHub ---------- */
-const USER = 'jolaurin';
-const EXTRA = ['spitbustr/baseball_sportspress_app'];   // repos outside your account to feature
-const FALLBACK = [
-  { name: 'baseball_sportspress_app', full_name: 'spitbustr/baseball_sportspress_app', html_url: 'https://github.com/spitbustr/baseball_sportspress_app', description: 'A Node app for baseball league data.', language: 'JavaScript', stargazers_count: 0, pushed_at: '2025-05-05' },
-  { name: 'dev', full_name: 'jolaurin/dev', html_url: 'https://github.com/jolaurin/dev', description: 'Front-end sandbox built with Tailwind and PostCSS.', language: 'JavaScript', stargazers_count: 0, pushed_at: '2022-02-13' },
-];
-const LANG = { JavaScript: '#f1e05a', TypeScript: '#3178c6', PHP: '#8892bf', HTML: '#e34c26', CSS: '#663399', Python: '#3572a5', Shell: '#89e051', Vue: '#41b883' };
-let projects = [];
-
-const esc = s => String(s ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
-const ago = iso => {
-  const days = Math.floor((Date.now() - new Date(iso)) / 864e5);
-  if (days < 1) return 'today';
-  if (days < 30) return days + 'd ago';
-  if (days < 365) return Math.floor(days / 30) + 'mo ago';
-  return Math.floor(days / 365) + 'y ago';
-};
-
-function render(list) {
-  projects = list;
-  document.getElementById('grid').innerHTML = list.map(r => `
-    <a class="card" href="${esc(r.html_url)}">
-      <h3>${esc(r.full_name.startsWith(USER + '/') ? r.name : r.full_name)}</h3>
-      <p>${esc(r.description || 'No description yet.')}</p>
-      <div class="meta">
-        ${r.language ? `<span><i class="dot" style="background:${LANG[r.language] || 'var(--accent2)'}"></i>${esc(r.language)}</span>` : ''}
-        <span>★ ${r.stargazers_count}</span>
-        <span>${ago(r.pushed_at)}</span>
-      </div>
-    </a>`).join('');
-}
-
-(async () => {
-  try {
-    const own = await fetch(`https://api.github.com/users/${USER}/repos?per_page=100&sort=pushed`).then(r => { if (!r.ok) throw r; return r.json(); });
-    const extra = await Promise.all(EXTRA.map(n => fetch('https://api.github.com/repos/' + n).then(r => r.ok ? r.json() : null).catch(() => null)));
-    const list = [...own.filter(r => !r.fork && r.name !== `${USER}.github.io`), ...extra.filter(Boolean)]
-      .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at));
-    render(list.length ? list : FALLBACK);
-  } catch { render(FALLBACK); }
-})();
-
 /* ---------- terminal ---------- */
 (() => {
   const out = document.getElementById('termOut'), inp = document.getElementById('termIn'), body = document.getElementById('termBody');
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
   const hist = []; let hi = 0;
   const print = (txt, cls = '') => { const d = document.createElement('div'); d.className = 'line ' + cls; d.innerHTML = txt; out.appendChild(d); body.scrollTop = body.scrollHeight; };
 
   const cmds = {
     help: () => print(
 `<span class="cmd">about</span>      who I am
-<span class="cmd">projects</span>   what I've built
-<span class="cmd">open</span> &lt;n&gt;   open project number n
 <span class="cmd">contact</span>    how to reach me
 <span class="cmd">stack</span>      tools I use
 <span class="cmd">clear</span>      wipe the screen`),
     about: () => print('Jonathan Laurin. Senior Full-Stack Software Developer. I like small, fast sites, tidy WordPress builds,\nand end-to-end tests that catch the bug before the client does.'),
     whoami: () => print('a curious visitor. welcome.'),
     stack: () => print('JavaScript · Node · PHP / WordPress · Tailwind · Playwright · Jekyll'),
-    contact: () => print('GitHub → <a href="https://github.com/jolaurin">github.com/jolaurin</a>'),
-    projects: () => projects.length
-      ? print(projects.map((p, i) => `<span class="muted">${String(i + 1).padStart(2)}</span>  ${esc(p.name)}`).join('\n') + '\n<span class="muted">type `open 1` to visit one</span>')
-      : print('still loading, try again in a second', 'muted'),
-    open: n => { const p = projects[+n - 1]; p ? (print('opening ' + esc(p.name) + '…', 'muted'), open(p.html_url, '_blank')) : print('usage: open <number>  (see `projects`)', 'err'); },
+    contact: () => print('LinkedIn → <a href="https://www.linkedin.com/in/jonathan-laurin-6a873122/">linkedin.com/in/jonathan-laurin-6a873122</a>\nGitHub   → <a href="https://github.com/jolaurin">github.com/jolaurin</a>'),
     clear: () => { out.innerHTML = ''; },
     sudo: () => print('nice try.', 'err'),
-    ls: () => print('about.txt  projects/  contact.txt  <span class="muted">(try the commands instead)</span>'),
+    ls: () => print('about.txt  contact.txt  <span class="muted">(try the commands instead)</span>'),
   };
 
   inp.addEventListener('keydown', e => {
