@@ -2,7 +2,257 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jonathan Laurin</title>
+<meta name="description" content="Jonathan Laurin — Senior Full-Stack Software Developer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d1117;
+    --paper: #e9e4d8;
+    --dim: #8b8778;
+    --accent: #ff7a45;
+    --accent2: #58c4b0;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --serif: "Fraunces", Georgia, serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
+  canvas#field { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+  main { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* hero */
+  .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; pointer-events: none; }
+  .hero > * { pointer-events: auto; }
+  .kicker { color: var(--accent2); letter-spacing: .2em; text-transform: uppercase; font-size: 12px; margin-bottom: 18px; }
+  h1 { font-family: var(--serif); font-weight: 800; font-size: clamp(56px, 11vw, 128px); line-height: .92; letter-spacing: -.02em; }
+  h1 span { display: block; color: var(--accent); }
+  .tag { margin-top: 28px; max-width: 520px; color: var(--paper); opacity: .85; }
+  .links { margin-top: 28px; display: flex; gap: 22px; flex-wrap: wrap; }
+  .links a { border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+  .links a:hover { text-decoration: none; color: var(--paper); }
+  .hint { position: absolute; bottom: 28px; color: var(--dim); font-size: 12px; animation: bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(6px); } }
+
+  section { padding: 90px 0; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: 34px; margin-bottom: 8px; }
+  .sub { color: var(--dim); margin-bottom: 28px; }
+
+  /* terminal */
+  .term { background: rgba(13,17,23,.88); border: 1px solid #2a2f37; border-radius: 10px; backdrop-filter: blur(6px); overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+  .term-bar { display: flex; gap: 7px; padding: 11px 14px; border-bottom: 1px solid #2a2f37; }
+  .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #3a3f47; }
+  .term-bar i:first-child { background: var(--accent); }
+  .term-body { height: 320px; overflow-y: auto; padding: 16px 18px; cursor: text; }
+  .term-body .line { white-space: pre-wrap; word-break: break-word; }
+  .term-body .cmd { color: var(--accent2); }
+  .term-body .err { color: var(--accent); }
+  .term-body .muted { color: var(--dim); }
+  .prompt-row { display: flex; gap: 8px; }
+  .prompt-row span { color: var(--accent); }
+  .prompt-row input { flex: 1; background: none; border: 0; outline: 0; color: var(--paper); font: inherit; caret-color: var(--accent); }
+
+  /* projects */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .card { display: block; background: rgba(13,17,23,.85); border: 1px solid #2a2f37; border-radius: 10px; padding: 20px; color: var(--paper); transition: transform .2s, border-color .2s; backdrop-filter: blur(6px); }
+  .card:hover { transform: translateY(-3px); border-color: var(--accent); text-decoration: none; }
+  .card h3 { font-size: 16px; font-weight: 600; color: var(--paper); margin-bottom: 6px; word-break: break-word; }
+  .card p { color: var(--dim); font-size: 13px; min-height: 40px; }
+  .meta { margin-top: 14px; display: flex; gap: 16px; font-size: 12px; color: var(--dim); }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: var(--accent2); }
+
+  footer { padding: 60px 0 40px; color: var(--dim); font-size: 12px; border-top: 1px solid #2a2f37; }
+  @media (prefers-reduced-motion: reduce) { .hint { animation: none; } }
+</style>
+</head>
+<body>
+<canvas id="field" aria-hidden="true"></canvas>
+
+<main>
+  <header class="hero">
+    <p class="kicker">Senior Full-Stack Software Developer</p>
+    <h1>Jonathan <span>Laurin.</span></h1>
+    <p class="tag">I build things for the web: sites, tools, and the tests that keep them from breaking. Move your cursor around; the background is listening.</p>
+    <nav class="links">
+      <a href="#terminal">Terminal</a>
+      <a href="#projects">Projects</a>
+      <a href="https://github.com/jolaurin">GitHub</a>
+    </nav>
+    <p class="hint">↓ scroll</p>
+  </header>
+
+  <section id="terminal">
+    <h2>Ask me something</h2>
+    <p class="sub">A tiny shell. Type <span style="color:var(--accent2)">help</span> to start.</p>
+    <div class="term">
+      <div class="term-bar"><i></i><i></i><i></i></div>
+      <div class="term-body" id="termBody">
+        <div id="termOut"></div>
+        <div class="prompt-row"><span>jo@laurin ~ $</span><input id="termIn" autocomplete="off" spellcheck="false" aria-label="Terminal input"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <h2>Projects</h2>
+    <p class="sub">Pulled live from GitHub, most recently updated first.</p>
+    <div class="grid" id="grid"><p class="muted">Loading…</p></div>
+  </section>
+
+  <footer>
+    © <span id="yr"></span> Jonathan Laurin · One HTML file, no framework, hosted on GitHub Pages.
+  </footer>
+</main>
+
+<script>
+/* ---------- generative flow field ---------- */
+(() => {
+  const c = document.getElementById('field'), x = c.getContext('2d');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W, H, dpr, parts = [], t = 0;
+  const mouse = { x: -9999, y: -9999 };
+  const N = () => Math.min(900, Math.floor(W * H / 1800));
+
+  function resize() {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    c.width = W * dpr; c.height = H * dpr;
+    x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    x.fillStyle = '#0d1117'; x.fillRect(0, 0, W, H);
+    parts = Array.from({ length: N() }, spawn);
+  }
+  function spawn() {
+    return { x: Math.random() * W, y: Math.random() * H, life: Math.random() * 200 + 50,
+             hue: Math.random() < 0.82 ? 'rgba(255,122,69,' : 'rgba(88,196,176,' };
+  }
+  // cheap smooth pseudo-noise from layered sines
+  const angle = (px, py) =>
+    Math.sin(px * 0.0021 + t * 0.6) * 1.7 + Math.cos(py * 0.0027 - t * 0.4) * 1.7 +
+    Math.sin((px + py) * 0.0013 + t * 0.25) * 1.2;
+
+  function step() {
+    t += 0.004;
+    x.fillStyle = 'rgba(13,17,23,0.075)';
+    x.fillRect(0, 0, W, H);
+    x.lineWidth = 1.1;
+    for (const p of parts) {
+      let a = angle(p.x, p.y);
+      const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
+      if (d2 < 22000) a = Math.atan2(dy, dx) + Math.PI / 2.4;   // swirl around cursor
+      const nx = p.x + Math.cos(a) * 1.6, ny = p.y + Math.sin(a) * 1.6;
+      x.strokeStyle = p.hue + (d2 < 22000 ? 0.9 : 0.35) + ')';
+      x.beginPath(); x.moveTo(p.x, p.y); x.lineTo(nx, ny); x.stroke();
+      p.x = nx; p.y = ny;
+      if (--p.life < 0 || nx < 0 || nx > W || ny < 0 || ny > H) Object.assign(p, spawn());
+    }
+    if (!reduce) requestAnimationFrame(step);
+  }
+  addEventListener('resize', resize);
+  addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  addEventListener('pointerleave', () => { mouse.x = mouse.y = -9999; });
+  resize();
+  if (reduce) { for (let i = 0; i < 160; i++) step(); } else step();
+})();
+
+/* ---------- projects from GitHub ---------- */
+const USER = 'jolaurin';
+const EXTRA = ['spitbustr/baseball_sportspress_app'];   // repos outside your account to feature
+const FALLBACK = [
+  { name: 'baseball_sportspress_app', full_name: 'spitbustr/baseball_sportspress_app', html_url: 'https://github.com/spitbustr/baseball_sportspress_app', description: 'A Node app for baseball league data.', language: 'JavaScript', stargazers_count: 0, pushed_at: '2025-05-05' },
+  { name: 'dev', full_name: 'jolaurin/dev', html_url: 'https://github.com/jolaurin/dev', description: 'Front-end sandbox built with Tailwind and PostCSS.', language: 'JavaScript', stargazers_count: 0, pushed_at: '2022-02-13' },
+];
+const LANG = { JavaScript: '#f1e05a', TypeScript: '#3178c6', PHP: '#8892bf', HTML: '#e34c26', CSS: '#663399', Python: '#3572a5', Shell: '#89e051', Vue: '#41b883' };
+let projects = [];
+
+const esc = s => String(s ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+const ago = iso => {
+  const days = Math.floor((Date.now() - new Date(iso)) / 864e5);
+  if (days < 1) return 'today';
+  if (days < 30) return days + 'd ago';
+  if (days < 365) return Math.floor(days / 30) + 'mo ago';
+  return Math.floor(days / 365) + 'y ago';
+};
+
+function render(list) {
+  projects = list;
+  document.getElementById('grid').innerHTML = list.map(r => `
+    <a class="card" href="${esc(r.html_url)}">
+      <h3>${esc(r.full_name.startsWith(USER + '/') ? r.name : r.full_name)}</h3>
+      <p>${esc(r.description || 'No description yet.')}</p>
+      <div class="meta">
+        ${r.language ? `<span><i class="dot" style="background:${LANG[r.language] || 'var(--accent2)'}"></i>${esc(r.language)}</span>` : ''}
+        <span>★ ${r.stargazers_count}</span>
+        <span>${ago(r.pushed_at)}</span>
+      </div>
+    </a>`).join('');
+}
+
+(async () => {
+  try {
+    const own = await fetch(`https://api.github.com/users/${USER}/repos?per_page=100&sort=pushed`).then(r => { if (!r.ok) throw r; return r.json(); });
+    const extra = await Promise.all(EXTRA.map(n => fetch('https://api.github.com/repos/' + n).then(r => r.ok ? r.json() : null).catch(() => null)));
+    const list = [...own.filter(r => !r.fork && r.name !== `${USER}.github.io`), ...extra.filter(Boolean)]
+      .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at));
+    render(list.length ? list : FALLBACK);
+  } catch { render(FALLBACK); }
+})();
+
+/* ---------- terminal ---------- */
+(() => {
+  const out = document.getElementById('termOut'), inp = document.getElementById('termIn'), body = document.getElementById('termBody');
+  const hist = []; let hi = 0;
+  const print = (txt, cls = '') => { const d = document.createElement('div'); d.className = 'line ' + cls; d.innerHTML = txt; out.appendChild(d); body.scrollTop = body.scrollHeight; };
+
+  const cmds = {
+    help: () => print(
+`<span class="cmd">about</span>      who I am
+<span class="cmd">projects</span>   what I've built
+<span class="cmd">open</span> &lt;n&gt;   open project number n
+<span class="cmd">contact</span>    how to reach me
+<span class="cmd">stack</span>      tools I use
+<span class="cmd">clear</span>      wipe the screen`),
+    about: () => print('Jonathan Laurin. Senior Full-Stack Software Developer. I like small, fast sites, tidy WordPress builds,\nand end-to-end tests that catch the bug before the client does.'),
+    whoami: () => print('a curious visitor. welcome.'),
+    stack: () => print('JavaScript · Node · PHP / WordPress · Tailwind · Playwright · Jekyll'),
+    contact: () => print('GitHub → <a href="https://github.com/jolaurin">github.com/jolaurin</a>'),
+    projects: () => projects.length
+      ? print(projects.map((p, i) => `<span class="muted">${String(i + 1).padStart(2)}</span>  ${esc(p.name)}`).join('\n') + '\n<span class="muted">type `open 1` to visit one</span>')
+      : print('still loading, try again in a second', 'muted'),
+    open: n => { const p = projects[+n - 1]; p ? (print('opening ' + esc(p.name) + '…', 'muted'), open(p.html_url, '_blank')) : print('usage: open <number>  (see `projects`)', 'err'); },
+    clear: () => { out.innerHTML = ''; },
+    sudo: () => print('nice try.', 'err'),
+    ls: () => print('about.txt  projects/  contact.txt  <span class="muted">(try the commands instead)</span>'),
+  };
+
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const raw = inp.value.trim(); inp.value = '';
+      print(`<span style="color:var(--accent)">jo@laurin ~ $</span> ${esc(raw)}`);
+      if (!raw) return;
+      hist.push(raw); hi = hist.length;
+      const [c, ...args] = raw.split(/\s+/);
+      (cmds[c.toLowerCase()] || (() => print(`command not found: ${esc(c)}. type <span class="cmd">help</span>`, 'err')))(...args);
+    } else if (e.key === 'ArrowUp' && hi > 0) { inp.value = hist[--hi]; e.preventDefault(); }
+    else if (e.key === 'ArrowDown') { hi = Math.min(hist.length, hi + 1); inp.value = hist[hi] || ''; }
+  });
+  body.addEventListener('click', () => inp.focus());
+  print('Welcome. Type <span class="cmd">help</span> and press Enter.', 'muted');
+})();
+
+document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
+
 <title>Jonathan Laurin</title>
 <meta name="description" content="Jonathan Laurin — Senior Full-Stack Software Developer.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
